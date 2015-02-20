@@ -1,4 +1,4 @@
-  /*
+/*
      диздок
      
      симулятор ботана
@@ -54,45 +54,77 @@
     }
     
     //присваивание стартовых переменнных
-    Game={};
-    Game.Player={};
-    Game.Player.knowledge=0;
-    Game.Player.totalKnowledge=0;
-    Game.Player.speedOfStuding=0;
-    Game.Player.speedLimit=150;
-    Game.Player.Upgrades={};
-    Game.Player.hitPower=4;
-    Game.Player.decreaseSpeed=1;
-    
-    // в див speed пишем 0 (текущую скорость учебы)
-    $("#speed").text(0);
-    
-    //обработка клика
-    $("#hitButton").click(function(){
-        //увеличение скорости ботания и обновление содержимого дивов
-        var x=Game.Player.speedOfStuding+Game.Player.hitPower;
-        if(x<=Game.Player.speedLimit){
-           Game.Player.speedOfStuding=x;
-           $("#speed").text(  Game.Player.speedOfStuding );
-        }else if(x<=Game.Player.speedLimit+Game.Player.hitPower){
-            Game.Player.speedOfStuding=Game.Player.speedLimit;
-           $("#speed").text( Game.Player.speedOfStuding );
-        }
 
+    UI={};
+    Player={};
+    Player.knowledge=0;
+    Player.totalKnowledge=0;
+    Player.knowledgeToSpend=0;
+    Player.speedOfStuding=0;
+    Player.speedLimit=150;
+    Player.Upgrades={};
+    Player.hitPower=1;
+    Player.decreaseSpeed=1;
+      
+   
+    //создание холста
+    UI.stage = new createjs.Stage("canvas");
+
+    //создание кнопки удара
+    //обработка клика
+     var hitFunction=function(){
+        //увеличение скорости ботания и обновление содержимого дивов
+        var x=Player.speedOfStuding+Player.hitPower;
+        if(x<=Player.speedLimit){
+           Player.speedOfStuding=x;
+        }else if(x<=Player.speedLimit+Player.hitPower){
+           Player.speedOfStuding=Player.speedLimit;
+        }
+        UI.speedCounter.text="Speed of studing: "+Player.speedOfStuding;
+        UI.stage.update();
         
-    });
+    }
+
+    //создание кнопки удара
+    UI.hitButton = new createjs.Shape();
+    UI.hitButton.graphics.beginFill("DeepSkyBlue").drawRect(200,100,400,300);
+    UI.hitButton.addEventListener("click", hitFunction);
+    UI.stage.addChild(UI.hitButton);
+    
+
+    //создание счетчика знаний
+    UI.totalKnowledgeCounter=new createjs.Text("Your total knowledge: "+Player.totalKnowledge,"40px Arial","black");
+    UI.totalKnowledgeCounter.x=200;
+    UI.totalKnowledgeCounter.y=450;
+    UI.stage.addChild(UI.totalKnowledgeCounter);
+
+    //создание счетчика знаний, которых можно тратить
+    UI.knowledgeToSpendCounter=new createjs.Text("Your knowledge to spend: "+Player.knowledgeToSpend,"40px Arial","black");
+    UI.knowledgeToSpendCounter.x=200;
+    UI.knowledgeToSpendCounter.y=500;
+    UI.stage.addChild(UI.knowledgeToSpendCounter);
+    
+    //создание счетчика скорости ботания
+    UI.speedCounter=new createjs.Text("Speed of studing: "+Player.speedOfStuding,"40px Arial","black");
+    UI.speedCounter.x=200;
+    UI.speedCounter.y=550;
+    UI.stage.addChild(UI.speedCounter);
+
+    //обновление картинки
+    UI.stage.update();
 
     //тикер - каждые 0,6 сек 
     setInterval(function(){
         //  увеличение знаний
-        Game.Player.totalKnowledge+=Game.Player.speedOfStuding;
+        Player.totalKnowledge+=Player.speedOfStuding;
+        Player.knowledgeToSpend+=Player.speedOfStuding;
         //  уменьшение скорости
-        if(Game.Player.speedOfStuding>=1)
-            Game.Player.speedOfStuding-=Game.Player.decreaseSpeed;
+        if(Player.speedOfStuding>=1)
+            Player.speedOfStuding-=Player.decreaseSpeed;
         //обновление дивов
-        $("#speed").text(Game.Player.speedOfStuding);
-        $("#knowledge").text(Game.Player.totalKnowledge);
-    },600);
-
-// работаем в jsfiddle.net
-//не забыть подключить последнюю версию jquery в менюшке слева
+        UI.speedCounter.text="Speed of studing: "+Player.speedOfStuding;
+        UI.totalKnowledgeCounter.text="Your total knowledge: "+Player.totalKnowledge;
+        UI.knowledgeToSpendCounter.text="Your knowledge to spend: "+Player.knowledgeToSpend;
+        UI.stage.update();
+    },500);
+    
