@@ -93,3 +93,6 @@
         $("#speed").text(Game.Player.speedOfStuding);
         $("#knowledge").text(Game.Player.totalKnowledge);
     },600);
+
+// работаем в jsfiddle.net
+//не забыть подключить последнюю версию jquery в менюшке слева
