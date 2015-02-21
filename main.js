@@ -53,6 +53,14 @@ function Upgrade(name, price, parameter, value) {
 
 }
 
+function UpgradeButton(name,x,y,color){
+    var Button = new createjs.Shape();
+    Button.graphics.beginFill(color).drawRect(585+65*x,50+65*y , 60, 60);
+    Button.addEventListener("click", function(){activateUpgrade(name);});
+    UI.stage.addChild(Button);
+    return Button;
+}
+
 function getUpgradeByName(name){
     for(var i=0;i<Player.upgrades.length;i++)
         if(Player.upgrades[i].name==name)
@@ -62,12 +70,20 @@ function getUpgradeByName(name){
 
 function activateUpgrade(name) {
     var Up=getUpgradeByName(name);
-    Player[Up.parameter] += Up.currentValue;
-    Player["knowledgeToSpend"] -= Up.currentPrice;
-    Up.level++;
-    Up.currentPrice = Up.getPrice(Up.level + 1);
-    Up.currentValue = Up.getValue(Up.level + 1);
+    if( Up.currentPrice<=Player["knowledgeToSpend"] ){
+        Player[Up.parameter] += Up.currentValue;
+        Player["knowledgeToSpend"] -= Up.currentPrice;
+        Up.level++;
+        Up.currentPrice = Up.getPrice(Up.level + 1);
+        Up.currentValue = Up.getValue(Up.level + 1);
+        
+        UI.speedCounter.text = "Learning rate: " + Player.speedOfStuding * 2 + " per second";
+        UI.totalKnowledgeCounter.text = "Total knowledge: " + Player.totalKnowledge;
+        UI.knowledgeToSpendCounter.text = "Knowledge to spend: " + Player.knowledgeToSpend;
+        UI.stage.update();
+    }
 }
+
 
 
 //присваивание стартовых переменнных
@@ -85,9 +101,11 @@ Player.speedSupremum = 150;
 Player.hitPower = 1;
 Player.decreaseSpeed = 1;
 Player.upgrades = [];
-Player.upgrades[0] = new Upgrade("Autopunch", function (level) {return level*level*1000;}, "speedInfimum", function (level) {
-    return level*10;
-});
+Player.upgrades[0] = new Upgrade("Autopunch", function (level) {return level*level*1000;}, "speedInfimum", function (level) { return level*10;});
+
+Player.upgrades[1] = new Upgrade("Heavy hand", function (level) {return level*level*1000;}, "hitPower", function (level) { return level;});
+
+
 
 
 //создание холста
@@ -134,12 +152,11 @@ UI.speedCounter.y = 5;
 UI.stage.addChild(UI.speedCounter);
 
 UI.upgradeButtons=[];
-UI.upgradeButtons[0]
+UI.upgradeButtons[0];
 //апгрейд autopunch
-UI.upgradeButtons[0] = new createjs.Shape();
-UI.upgradeButtons[0].graphics.beginFill("Magenta").drawRect(650,150 , 50, 50);
-UI.upgradeButtons[0].addEventListener("click", function(){activateUpgrade("Autopunch");});
-UI.stage.addChild(UI.upgradeButtons[0]);
+UI.upgradeButtons[0] = new UpgradeButton("Autopunch",1,1,"Red");
+UI.upgradeButtons[0] = new UpgradeButton("Heavy hand",2,1,"Green");
+
 
 //обновление картинки
 UI.stage.update();
